@@ -4,14 +4,20 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 #include "videoListType.h"
 
 using namespace std;
 
+static sf::Clock reloj;
+static sf::Time tiempo = reloj.getElapsedTime();
+
 void createVideoList(ifstream &infile, videoListType &videoList);
 
 void letterEvent(string& w){
+	if(tiempo.asSeconds()<0.1f)
+		return;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::BackSpace)&&w.size()>0){
 		string temp=w;
 		w="";
@@ -72,6 +78,8 @@ void letterEvent(string& w){
 		w+= "y";
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
 		w+= "z";
+		
+	reloj.restart();
 }
 
 class Textarea{
@@ -156,6 +164,31 @@ class Button{
 sf::Vector2i Button::CLICK_POSITION = sf::Vector2i(0,0);
 
 
+std::vector<string> segment(string peliculas){
+	cout<<peliculas <<endl;
+	string currentpage="";
+	std::vector<string> paginas;
+	int i=0;
+	int jumps=0;
+	while(peliculas.size()!=i){
+		if(peliculas[i]=='\n')
+			jumps++;
+		currentpage+=peliculas[i];
+		i++;
+		if(jumps==14){
+			paginas.push_back(currentpage);
+			currentpage="";
+			jumps=0;
+		}
+	}
+	paginas.push_back(currentpage);
+	/*for(int i = 0;i<paginas.size();i++){
+		cout <<"PAGINA NUMERO "<< i +1 << paginas[i];
+	}*/
+	return paginas;
+}
+
+
 int main()
 {
 	videoListType videoList;
@@ -187,14 +220,25 @@ int main()
 	Button verify(sf::Vector2f(40,520),sf::Vector2f(425,629));
 	Button showtitles(sf::Vector2f(40,648),sf::Vector2f(425,757));
 	Button showvideos(sf::Vector2f(40,776),sf::Vector2f(425,885));
+	Button prev(sf::Vector2f(1250,780),sf::Vector2f(1302,846));
+	Button next(sf::Vector2f(1308,782),sf::Vector2f(1365,844));
 	Textarea UserCamp(sf::Vector2f(537,151), sf::Vector2f(1375,200));
 	Textarea ResultsCamp(sf::Vector2f(544,315), sf::Vector2f(1373,850));
 	ResultsCamp.disableUser();
-
+	
+	std::vector<string> paginas = segment(videoList.get());
+	std::vector<string> paginasTitles = segment(videoList.videoGetTitle());
+	
+	string currentList="";
+	
+	int currentPage = 1;
+	int currentTitlePage = 0;
 	
     while (window.isOpen())
     {
-
+    	paginas=segment(videoList.get());
+    	paginasTitles = segment(videoList.videoGetTitle());
+		tiempo = reloj.getElapsedTime();
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -204,6 +248,7 @@ int main()
             if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
             	Button::CLICK_POSITION=sf::Mouse::getPosition(window);
             	Textarea::CLICK_POSITION=sf::Mouse::getPosition(window);
+            	cout<<sf::Mouse::getPosition(window).x<<" "<<sf::Mouse::getPosition(window).y<<endl;
 			}
             	
             
@@ -254,14 +299,49 @@ int main()
 
         if(showtitles.event())
         {
-        	ResultsCamp.write(videoList.videoGetTitle());
+        	currentList="titles";
+        	currentTitlePage=0;
+        	ResultsCamp.write(paginasTitles[currentTitlePage]);
 		}
 
         if(showvideos.event()){
-        	ResultsCamp.write(videoList.get());
+        	currentList="videos";
+        	currentPage = 0;
+        	ResultsCamp.write(paginas[currentPage]);
+		}
+		
+		if(prev.event()){
+			if(currentList=="videos"){
+				if(!(currentPage==0)){
+					currentPage--;
+					ResultsCamp.write(paginas[currentPage]);
+				}
+			}
+			
+			if(currentList=="titles"){
+				if(!(currentTitlePage==0)){
+					currentTitlePage--;
+					ResultsCamp.write(paginasTitles[currentTitlePage]);
+				}
+			}
+			
 		}
 
-        
+        if(next.event()){
+        	if(currentList=="videos"){
+        		if(!(currentPage==paginas.size()-1)){
+	        		currentPage++;
+					ResultsCamp.write(paginas[currentPage]);
+				}
+			}
+			if(currentList=="titles"){
+				if(!(currentTitlePage==paginasTitles.size()-1)){
+	        		currentTitlePage++;
+					ResultsCamp.write(paginasTitles[currentTitlePage]);
+				}
+			}
+        	
+		}
         window.clear();
         window.draw(fondo);
         window.draw(UserCamp.getText());
