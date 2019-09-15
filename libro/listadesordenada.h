@@ -24,37 +24,26 @@ void ListaDesordenada<T>::swap(int pos1,int pos2){
 		return;
 	if(!(pos1-pos2==1 || pos1-pos2==-1))
 		return;
-	if(pos1<pos2){
-		for(int i=0;i<pos1;i++){
-			anterior =aux;
-			aux = aux->link;
-		}
-		if(aux==anterior){
-			this->first =aux->link;
-			aux->link=aux->link->link;
-			aux->link->link=aux;
-		}
-		else{
-			anterior->link = aux->link;
-			aux->link=(aux->link)->link;
-			anterior->link->link=aux;
-		}
-			
-		
-			
-	}/*
-	else{
-		for(int i=0;i<pos2;i++){
-			aux = aux-> link ;
-			anterior = aux;		
-		}
+	if(pos1>pos2){
+        int temp=pos1;
+        pos1=pos2;
+        pos2=temp;
+    }
 
-		aux->link=aux->link->link;
-		aux->link->link=aux;
-	}
-		*/	
-		
-		
+    for(int i=0;i<pos1;i++){
+        anterior =aux;
+        aux = aux->link;
+    }
+    if(aux==anterior){
+        this->first =aux->link;
+        aux->link=aux->link->link;
+        this->first->link=aux;
+    }
+    else{
+        anterior->link = aux->link;
+        aux->link=(aux->link)->link;
+        anterior->link->link=aux;
+    }
 }
 
 template <class T>

@@ -1,8 +1,10 @@
 #include <iostream>
 #include "listaordenada.h"
 #include "listadesordenada.h"
+#include "doublelinkedlist.h"
 
 using namespace std;
+
 
 template <class T>
 void printLots(ListaOrdenada<T> a, ListaOrdenada<T> b){
@@ -19,6 +21,22 @@ void printLots(ListaOrdenada<T> a, ListaOrdenada<T> b){
 		else
 			break;
 	}
+}
+
+template <typename T>
+linkedListIterator<T> find( linkedListIterator<T> begin, linkedListIterator<T> end, const T x ){
+	for(linkedListIterator<T> temp = begin; temp !=end ; ++temp){
+		if(x==*temp)
+			return temp;
+	}
+	return end;
+}
+
+template <class T>
+ListaOrdenada<T> interseccion(ListaOrdenada<T> a,ListaOrdenada<T> b){
+	linkedListIterator<T> a_it = a.begin();
+	linkedListIterator<T> b_it = b.begin();
+	for(a_it,b_it;a_it!=a.end()||b_it!=b.end();)
 }
 
 int main(){
@@ -39,11 +57,18 @@ int main(){
 	b.insert(0);
 	b.insert(2);
 	b.insert(3);
-	printLots(a,b);
+	//printLots(a,b);
 	
+	doubleLinkedList<int> doble;
+	doble.insertFirst(1);
+	doble.insertFirst(2);
+
 	cout << "swap : "<<endl;
-	unordered.swap(1,2);
+	unordered.swap(1,0);
 	unordered.print();
+	doble.swap(0,1);
+	doble.print();
+	find(a.begin(),a.end(),3);
 	return 0;	
 }
 
