@@ -14,7 +14,24 @@ public:
     void insertLast(const T item);
     void deleteNode(const T deleteItem);
     void swap(int pos1, int pos2);
+    void splice(int ,ListaDesordenada<T>&);
 };
+
+template <class T>
+void ListaDesordenada<T>::splice(int position,ListaDesordenada<T>& List){
+    Nodo<T>* temp= this->first;
+    for(int i=0;i<position;i++)
+        temp = temp->link;
+    for(linkedListIterator<T> it=List.begin();it!=List.end();++it){
+        Nodo<T>* newNodo= new Nodo<T>;
+        newNodo->data=*it;
+        newNodo->link=temp->link;
+        temp->link=newNodo;
+        this->count++;
+        temp=temp->link;
+    }
+    List.initializeList();
+}
 
 template <class T>
 void ListaDesordenada<T>::swap(int pos1,int pos2){
@@ -67,6 +84,7 @@ void ListaDesordenada<T>::insertFirst(const T item)
     newNode = new Nodo<T>;
     newNode->data = item;
     newNode->link = this->first;
+    newNode->Stole=false;
     this->first = newNode;
     this->count++;
     if (this->last == NULL)
@@ -80,6 +98,7 @@ void ListaDesordenada<T>::insertLast(const T item)
     newNode = new Nodo<T>;
     newNode->data = item;
     newNode->link = NULL;
+    newNode->Stole=false;
     if (this->first == NULL)
     {
         this->first = newNode;
@@ -97,7 +116,6 @@ void ListaDesordenada<T>::insertLast(const T item)
 template <class T>
 void ListaDesordenada<T>::deleteNode(const T elemento)
 {
-    Nodo<T> *current;
     Nodo<T> *aux;
     bool found;
     if (this->first == NULL) // si esta vacia
@@ -106,35 +124,39 @@ void ListaDesordenada<T>::deleteNode(const T elemento)
     {
         if (this->first->data == elemento)
         {
-            current = this->first;
+            this->invalid_node = this->first;
             this->first = this->first->link;
             this->count--;
             if (this->first == NULL)
                 this->last = NULL;
-            delete current;
+            this->invalid_node->Stole=true;
+            delete this->invalid_node;
+            
+            
         }
         else
         {
             found = false;
             aux = this->first;
-            current = this->first->link;
-            while (current != NULL && !found)
+            this->invalid_node = this->first->link;
+            while (this->invalid_node != NULL && !found)
             {
-                if (current->data != elemento)
+                if (this->invalid_node->data != elemento)
                 {
-                    aux = current;
-                    current = current->link;
+                    aux = this->invalid_node;
+                    this->invalid_node = this->invalid_node->link;
                 }
                 else
                     found = true;
             }
             if (found)
             {
-                aux->link = current->link;
+                aux->link = this->invalid_node->link;
                 this->count--;
-                if (this->last == current)
+                if (this->last == this->invalid_node)
                     this->last = aux;
-                delete current;
+                delete this->invalid_node;
+                this->invalid_node->Stole=true;
             }
             else
                 cout << "El elemento a borrar no esta en la lista" << endl;

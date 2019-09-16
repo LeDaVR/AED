@@ -10,8 +10,15 @@ public:
     linkedListIterator(Nodo<T> *ptr);
     T operator*();
     linkedListIterator<T> operator++();
+    linkedListIterator<T> operator+(int);
     bool operator==(const linkedListIterator<T> &right) const;
     bool operator!=(const linkedListIterator<T> &right) const;
+    linkedListIterator<T> operator--();
+    linkedListIterator<T> operator-(int num);
+    bool isStole(){
+        return current->Stole;
+    }
+
 
 private:
     Nodo<T> *current;
@@ -40,6 +47,28 @@ linkedListIterator<T> linkedListIterator<T>::operator++()
 {
     current = current->link;
     return *this;
+}
+
+template<class T>
+linkedListIterator<T> linkedListIterator<T>::operator+(int num){
+    linkedListIterator<T> temp=*this;
+    for(int i=0;i<num;i++)
+        ++temp;
+    return temp;
+}
+
+template <class T>
+linkedListIterator<T> linkedListIterator<T>::operator--(){
+    current=current->prev_link;
+    return *this;
+}
+
+template <class T>
+linkedListIterator<T> linkedListIterator<T>::operator-(int num){
+    linkedListIterator<T> temp=*this;
+    for(int i=0;i<num;i++)
+        --temp;
+    return temp;
 }
 
 template <class T>

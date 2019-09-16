@@ -6,9 +6,85 @@
 #include <iostream>
 using namespace std;
 template <class T>
-class doubleLinkedList : linkedList<T>{
+class doubleLinkedList : public linkedList<T>{
 	public:
-        void print(); 
+    class const_reverse_iterator{
+        friend class doubleLinkedList<T>;
+        const_reverse_iterator( ) : current{ nullptr }{}
+
+        const T & operator* ( ) const
+        { return current->data; }
+
+        const_reverse_iterator & operator++ ( )
+        {
+            current = current->prev_link;
+            return *this;
+        }
+
+        const_reverse_iterator operator++ ( int )
+        {
+            const_reverse_iterator old = *this;
+            -- *this;
+            return old;
+        }
+
+        bool operator== ( const const_reverse_iterator & rhs ) const
+        { return current == rhs.current; }
+        bool operator!= ( const const_reverse_iterator & rhs ) const
+        { return !( *this == rhs ); }
+
+        protected:
+            Nodo<T> *current;
+            const_reverse_iterator( Nodo<T> *p ) : current(p){}
+    };
+
+    class reverse_iterator : public const_reverse_iterator{
+        public:
+        friend class doubleLinkedList<T>;
+            reverse_iterator(){
+                this->current=nullptr;
+            }
+            const T & operator* ( ) const{
+                return const_reverse_iterator::operator*();
+            }
+            T & operator*(){
+                return this->current->data;
+            }
+
+            reverse_iterator & operator++ ( )
+            {
+                this->current = this->current->prev_link;
+                return *this;
+            }
+
+            reverse_iterator operator++ ( int )
+            {
+                reverse_iterator old = *this;
+                ++*this;
+                return old;
+            }
+
+            bool operator== ( const reverse_iterator & rhs ) const
+            { return this->current == rhs.current; }
+
+            bool operator!= ( const reverse_iterator & rhs ) const
+            { return !( *this == rhs ); }
+
+        protected:
+            reverse_iterator(Nodo<T>* a){
+                this->current=a;
+            }
+    };
+
+    reverse_iterator rbegin(){
+        reverse_iterator temp(this->last);
+        return temp;
+    }
+
+    reverse_iterator rend(){
+        reverse_iterator temp(nullptr);
+        return temp;
+    }
 		bool search(const T elemento) const;
 		void insertFirst(const T item);
 		void insertLast(const T item);
@@ -16,17 +92,6 @@ class doubleLinkedList : linkedList<T>{
         void swap(int pos1,int pos2);
 		
 };
-
-template <class T>
-void doubleLinkedList<T>::print(){
-    Nodo<T> *current;
-    current = this->first;
-    while (current != NULL)
-    {
-        cout << current->data << " ";
-        current = current->link;
-    }
-}
 
 
 template <class T>
@@ -73,6 +138,8 @@ void doubleLinkedList<T>::insertFirst(const T item)
     newNode->data = item;
     newNode->link = this->first;
     newNode->prev_link = nullptr ;
+    if(this->count)
+        this->first->prev_link = newNode; 
     this->first = newNode;
     this->count++;
     if (this->last == NULL)
@@ -104,7 +171,7 @@ void doubleLinkedList<T>::insertLast(const T item)
 template <class T>
 void doubleLinkedList<T>::deleteNode(const T elemento)
 {
-    /*Nodo<T> *current;
+    Nodo<T> *current;
     Nodo<T> *aux;
     bool found;
     if (this->first == NULL) // si esta vacia
@@ -115,7 +182,7 @@ void doubleLinkedList<T>::deleteNode(const T elemento)
         {
             current = this->first;
             this->first = this->first->link;
-            this->first->link_prev=nullptr;
+            this->first->prev_link=nullptr;
             this->count--;
             if (this->first == NULL)
                 this->last = NULL;
@@ -147,7 +214,7 @@ void doubleLinkedList<T>::deleteNode(const T elemento)
             else
                 cout << "El elemento a borrar no esta en la lista" << endl;
         }
-    }*/
+    }
 }
 
 #endif

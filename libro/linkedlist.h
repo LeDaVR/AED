@@ -33,6 +33,7 @@ protected:
     int count;
     Nodo<T> *first;
     Nodo<T> *last;
+    Nodo<T> *invalid_node;
     void copyList(const linkedList<T> &otherList);
 };
 
@@ -45,6 +46,7 @@ bool linkedList<T>::isEmptyList() const
 template <class T>
 linkedList<T>::linkedList()
 {
+    invalid_node=nullptr;
     first = NULL;
     last = NULL;
     count = 0;
