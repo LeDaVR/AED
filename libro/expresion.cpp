@@ -1,53 +1,48 @@
-#include <iostream>
-#include <vector>
+#include <bits/stdc++.h> 
+using namespace std; 
 
-using namespace std;
-
-bool isletter(char a){
-    return (a>='a'&& a<='z') || (a>='1' && a<='9') || (a>='A' && a<='Z');
-}
-
-bool isprimarysymbol(char a){
-    return a =='*' || a == '/';
-}
-
-bool issecondarysymbol(char a){
-    return a == '+' || a == '-';
-}
-
-bool issymbol(char a){
-    return isprimarysymbol(a) || issecondarysymbol(a);
-}
-
-void analize(char& a,char& b){
-    if(issymbol(a)&&isletter(b))
-        swap(a,b);
-    if(issecondarysymbol(a)&&isprimarysymbol(b))
-        swap(a,b);
-}
-
-
-void toPostFix(string infix){
-    vector<string> posfix;
-    for(int j=0;j<infix.size()-1;j++){
-        if(isprimarysymbol(infix[j])&&isletter(infix[j+1])){
-            swap(infix[j],infix[j+1]);
-            posfix.pop_back();
-            string temp=infix[j-1];
-            posfix.push_back(temp);
-            j+=2;
-            continue;
-        }
-        string temp=infix[j]+'\0';
-        posfix.push_back(temp);
-    }
-    for(int i=0;i<posfix.size();i++)
-        cout<<posfix[i];
-}
-
-int main(){
-    string a;
-    cin>>a;
-    toPostFix(a);
-    return 0;
-}
+//verifica si es un operando
+bool isOperand(char x) 
+{ 
+   return (x >= 'a' && x <= 'z') || 
+          (x >= 'A' && x <= 'Z'); 
+} 
+  
+// Get Infix for a given postfix 
+// expression 
+string getInfix(string exp) 
+{ 
+    stack<string> s; 
+  
+    for (int i=0; exp[i]!='\0'; i++) // recorre toda la cadena
+    { 
+        if (isOperand(exp[i])) 
+        { 
+           string op(1, exp[i]); 
+           s.push(op); 
+        } 
+  
+        else // si es operador retirara el ultimo elemento
+        { 
+            string op1 = s.top(); 
+            s.pop(); // toma el primer operando
+            string op2 = s.top(); 
+            s.pop(); //tome el segundo operando
+            s.push("(" + op2 + exp[i] + 
+                   op1 + ")");  // los coloca con el operador en medio
+        } 
+    } 
+  
+    // There must be a single element 
+    // in stack now which is the required 
+    // infix. 
+    return s.top(); 
+} 
+  
+// Driver code 
+int main() 
+{ 
+    string exp = "ab+"; 
+    cout << getInfix(exp); 
+    return 0; 
+} 
