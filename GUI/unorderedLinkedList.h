@@ -1,7 +1,4 @@
 
-#ifndef UNORDEREDLINKEDLIST_H
-#define UNORDEREDLINKEDLIST_H
-
 #include <iostream>
 #include "linkedList.h"
 
@@ -112,5 +109,3 @@ void unorderedLinkedList<T>::deleteNode(const T elemento)
         }
     }
 }
-
-#endif

@@ -1,7 +1,4 @@
 
-#ifndef VIDEOLISTTYPE_H
-#define VIDEOLISTTYPE_H
-
 #include "unorderedLinkedList.h"
 #include "videoType.h"
 
@@ -176,5 +173,3 @@ string videoListType::get() const
     }
     return data;
 }
-
-#endif

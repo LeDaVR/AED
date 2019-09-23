@@ -1,7 +1,4 @@
 
-#ifndef LINKEDLIST_H
-#define LINKEDLIST_H
-
 #include <iostream>
 using namespace std;
 
@@ -232,6 +229,3 @@ const linkedListType<T> &linkedListType<T>::operator=(const linkedListType<T> &o
     }
     return *this;
 }
-
-
-#endif

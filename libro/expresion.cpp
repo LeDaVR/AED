@@ -1,48 +1,46 @@
-#include <bits/stdc++.h> 
+#include <iostream>
+
 using namespace std; 
 
-//verifica si es un operando
-bool isOperand(char x) 
-{ 
-   return (x >= 'a' && x <= 'z') || 
-          (x >= 'A' && x <= 'Z'); 
-} 
-  
-// Get Infix for a given postfix 
-// expression 
-string getInfix(string exp) 
-{ 
-    stack<string> s; 
-  
-    for (int i=0; exp[i]!='\0'; i++) // recorre toda la cadena
-    { 
-        if (isOperand(exp[i])) 
-        { 
-           string op(1, exp[i]); 
-           s.push(op); 
-        } 
-  
-        else // si es operador retirara el ultimo elemento
-        { 
-            string op1 = s.top(); 
-            s.pop(); // toma el primer operando
-            string op2 = s.top(); 
-            s.pop(); //tome el segundo operando
-            s.push("(" + op2 + exp[i] + 
-                   op1 + ")");  // los coloca con el operador en medio
-        } 
-    } 
-  
-    // There must be a single element 
-    // in stack now which is the required 
-    // infix. 
-    return s.top(); 
-} 
-  
-// Driver code 
+#define HEAD 1
+#define TAIL 2
+
+template <class T>
+class Stack{
+    private:
+        static int doble;
+        static T* saved;
+
+
+        T* arr;
+        int type;
+        int size; 
+    public:
+        Stack(){
+            if(!doble){
+                size=0;
+                arr = new T[size];
+                saved = arr;
+                doble=1;
+                type=HEAD;
+            }
+            else{
+                saved.push()
+            }
+        }
+        void push{
+
+        }
+        void pop{
+
+        }
+};
+
+template <class T>
+T Stack::saved;
+int Stack::doble = 0;
+
 int main() 
 { 
-    string exp = "ab+"; 
-    cout << getInfix(exp); 
-    return 0; 
+     
 } 
