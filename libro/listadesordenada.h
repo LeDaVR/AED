@@ -15,6 +15,20 @@ public:
     void deleteNode(const T deleteItem);
     void swap(int pos1, int pos2);
     void splice(int ,ListaDesordenada<T>&);
+    void printreverse() const{
+        Nodo<T>* aux;
+        int size = this->count; 
+        while(size){
+            aux = this->first;
+            int element = size - 1 ;
+            while(element){
+                aux = aux->link;
+                element--;
+            }
+            cout << aux->data;
+            size--;
+        }
+    }
 };
 
 template <class T>

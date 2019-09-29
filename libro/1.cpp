@@ -117,7 +117,7 @@ int main(){
 
 	cout << "swap : "<<endl;
 	unordered.swap(1,0);
-	unordered.print();
+	unordered.printreverse();
 	doble.swap(0,1);
 	doble.print();
 	find(a.begin(),a.end(),3);
