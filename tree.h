@@ -1,100 +1,152 @@
 #include <iostream>
+#include "abstract.cpp"
 using namespace std;
 
-template <class Comparable>
-struct BinaryNode
-{
-    BinaryNode();
-    Comparable element;
-    BinaryNode<Comparable>* left;
-    BinaryNode<Comparable>* right;
-    bool active;
-    BinaryNode( const Comparable & theElement, BinaryNode *lt, BinaryNode *rt ,bool ac)
-    : element{ theElement }, left{ lt }, right{ rt },active{ ac } { }
 
-    BinaryNode( Comparable && theElement, BinaryNode *lt, BinaryNode *rt,bool ac )
-    : element{ std::move( theElement ) }, left{ lt }, right{ rt }, active{ ac} { }
-};
-
-template <class Comparable>
-BinaryNode<Comparable>::BinaryNode(){
-    left = nullptr;
-    right = nullptr;
-}
-
-template <class Comparable>
+template <class T>
 class tree
 {
     public:
+        class iterator{
+            public:
+                iterator(){
+                    current =nullptr;
+                }
+                iterator(Nodo<T>* node){
+                    current = node;
+                }
+                const T & operator*() const{
+                    return current->data;
+                }
+                iterator & operator++(){
+                    if(current->link)
+                    {
+                        current = current->link;
+                        while(current->left)
+                        {
+                            current = current->left;
+                        }
+                    }
+                    else if (current->parent)
+                    {
+                        Nodo<T>* help = current->parent;
+                        while(help->data < current-> data && help->parent)
+                        {
+                            help = help->parent;
+                        }
+                        if(help->data > current->data )
+                            current = help;
+                        else
+                            current = nullptr;
+                    }
+                    return *this;
+                }
+                iterator & operator--()
+                {
+                    if(current->left)
+                    {
+                        current = current->left;
+                        while(current->link)
+                        {
+                            current = current->link;
+                        }
+                    }
+                    else if (current->parent)
+                    {
+                        Nodo<T>* help = current->parent;
+                        while(current-> data < help->data && help->parent)
+                        {
+                            help = help->parent;
+                        }
+                        if ( help->data < current->data )
+                            current = help;
+                    }
+                    return *this;
+                }
+                bool operator!=(iterator  other)
+                {
+                    return current != other.current;
+                }
+                bool operator==(iterator  other)
+                {
+                    return current == other.current;
+                }
+            private:
+                Nodo<T>* current;
+        };
         tree();
-        void insert(Comparable);
-        void remove(Comparable);
-        bool search(Comparable);
-        BinaryNode<Comparable>* findMin(BinaryNode<Comparable>*);
-        BinaryNode<Comparable>* findMax(BinaryNode<Comparable>*);
+        void insert(T);
+        void remove(T);
+        bool search(T);
+        Nodo<T>* findMin();
+        Nodo<T>* findMax();
+        iterator begin(){
+            iterator temp(findMin(root));
+            return temp;
+        }
+        iterator end(){
+            iterator temp(nullptr);
+            return temp;
+        }
         ~tree();
     private:
-        BinaryNode<Comparable>* findMin(BinaryNode<Comparable>*,BinaryNode<Comparable>*);
-        BinaryNode<Comparable>* findMax(BinaryNode<Comparable>*,BinaryNode<Comparable>*);
-        void insert(Comparable,BinaryNode<Comparable>*&);
-        void remove(Comparable,BinaryNode<Comparable>*&);
-        bool search(Comparable,BinaryNode<Comparable>*);
-        void makeEmpty(BinaryNode<Comparable>*&);
-        BinaryNode<Comparable>* root;
+        Nodo<T>* findMin(Nodo<T>*);
+        Nodo<T>* findMax(Nodo<T>*);
+        void insert(T,Nodo<T>*&);
+        void remove(T,Nodo<T>*&);
+        bool search(T,Nodo<T>*);
+        void makeEmpty(Nodo<T>*&);
+        Nodo<T>* root;
 };
 
-template <class Comparable>
-tree<Comparable>::tree()
+template <class T>
+tree<T>::tree()
 {
     root = nullptr;
 }
 
-template <class Comparable>
-void tree<Comparable>::makeEmpty(BinaryNode<Comparable>*& t){
+template <class T>
+void tree<T>::makeEmpty(Nodo<T>*& t){
     if( t != nullptr )
     {
         makeEmpty( t->left );
-        makeEmpty( t->right );
+        makeEmpty( t->link );
         delete t;
     }
     t = nullptr; 
 }
 
-template <class Comparable>
-tree<Comparable>::~tree()
+template <class T>
+tree<T>::~tree()
 {
     makeEmpty(root);
 }
 
-template <class Comparable>
-void tree<Comparable>::insert(Comparable newElement)
+template <class T>
+void tree<T>::insert(T newElement)
 {  
     insert(newElement,root);
 }
 
-template <class Comparable>
-void tree<Comparable>::remove(Comparable element)
+template <class T>
+void tree<T>::remove(T data)
 {  
-    remove(element,root);
+    remove(data,root);
 }
 
-template <class Comparable>
-bool tree<Comparable>::search(Comparable element)
+template <class T>
+bool tree<T>::search(T data)
 {
-    search(element,root);
+    return search(data,root);
 }
 
-template <class Comparable>
-BinaryNode<Comparable>* tree<Comparable>::findMin(BinaryNode<Comparable>* current,BinaryNode<Comparable>* inactive){
+template <class T>
+Nodo<T>* tree<T>::findMin(Nodo<T>* current){
     if(!current)
         return nullptr;
-    if(current->left && current->left != inactive)
+    if(current->left )
     {
-        return findMin(current->left,inactive);
-    }
-    else if (!current->active)
-    {
-        return findMin(root,current);
+        return findMin(current->left);
     }
     else
     {
@@ -102,99 +154,110 @@ BinaryNode<Comparable>* tree<Comparable>::findMin(BinaryNode<Comparable>* curren
     }
 }
 
-template <class Comparable>
-BinaryNode<Comparable>* tree<Comparable>::findMin(BinaryNode<Comparable>* current)
+template <class T>
+Nodo<T>* tree<T>::findMin()
 {
-    findMin(root,nullptr);
+    findMin(root);
 }
 
-template <class Comparable>
-BinaryNode<Comparable>* tree<Comparable>::findMax(BinaryNode<Comparable>* current, BinaryNode<Comparable>* inactive)
+template <class T>
+Nodo<T>* tree<T>::findMax(Nodo<T>* current)
 {
     if(!current)
         return nullptr;
-    if(current->right && current->right != inactive)
+    if(current->link)
     {
-        return findMax(current->right,inactive);
-    }
-    else if (!current->active)
-    {
-        return findMax(root,current);
+        return findMax(current->link);
     }
     else
     {
         return current;
     }
-    
 }
 
-template <class Comparable>
-BinaryNode<Comparable>* tree<Comparable>::findMax(BinaryNode<Comparable>* current)
+template <class T>
+Nodo<T>* tree<T>::findMax()
 {
-    findMax(root,nullptr);
+    findMax(root);
 }
 
-template <class Comparable>
-void tree<Comparable>::insert(Comparable element,BinaryNode<Comparable>*& current)
+
+template <class T>
+void tree<T>::insert(T data,Nodo<T>*& current)
 {
-    if(!current)
+    if(!root)
     {
-        current = new BinaryNode<Comparable>{element,nullptr,nullptr,true};
+        current = new Nodo<T>{data,nullptr,nullptr,nullptr};
     }
-    else if (element < current->element)
+    else if (data < current->data)
     {
-        insert(element,current->left);
+        if (current->left)
+            insert(data,current->left);
+        else
+            current->left = new Nodo<T>{data,nullptr,nullptr,current};
     }
-    else if (element > current->element)
+    else if (data > current->data)
     {
-        insert(element,current->right);
+        if (current->link)
+            insert(data,current->link);
+        else
+        {
+            current->link = new Nodo<T>{data,nullptr,nullptr,current};
+        }
     }
-    else if (!current->active)
+    else
     {
-        cout << current->element << " is now active" << endl;
-        current->active = true;
+        ;
     }
 }
 
-template <class Comparable>
-void tree<Comparable>::remove(Comparable element,BinaryNode<Comparable>*& current)
+
+template <class T>
+void tree<T>::remove(T data,Nodo<T>*& t)
 {
-    if(!current)
+    if(!t)
     {
         return;
     }
-    else if (element < current->element)
+    else if (data < t->data)
     {
-        remove(element,current->left);
+        remove(data,t->left);
     }
-    else if (element > current->element)
+    else if (data > t->data)
     {
-        remove(element,current->right);
+        remove(data,t->link);
+    }
+    if( t->left != nullptr && t->link != nullptr ) // Two children
+    {
+        t->data = findMax( t->left )->data;
+        remove( t->data, t->left );
     }
     else
     {
-        current->active = false;
-    }    
+        Nodo<T> *oldNode = t;
+        t = ( t->left != nullptr ) ? t->left : t->link;
+        delete oldNode;
+    }  
 }
 
 
-template <class Comparable>
-bool tree<Comparable>::search(Comparable element,BinaryNode<Comparable>* current)
+template <class T>
+bool tree<T>::search(T data,Nodo<T>* current)
 {
     if (!current)
     {
         return false;
     }
-    else if (element < current->element)
+    else if (data < current->data)
     {
-        return search(element,current->left);
+        return search(data,current->left);
     }
-    else if (element > current->element)
+    else if (data > current->data)
     {
-        return search(element,current->right);
+        return search(data,current->link);
     }
     else
     {
-        return current->active;
+        return true;
     }
 }

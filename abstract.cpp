@@ -4,9 +4,24 @@ using namespace std;
 template <class T>
 struct Nodo
 {
+    Nodo();
     T data;
-    Nodo<T> *link;
+    Nodo<T>* left;
+    Nodo<T>* link;
+    Nodo<T>* parent;
+    Nodo( const T & theElement, Nodo *lt, Nodo *rt,Nodo *pr)
+    : data{ theElement }, left{ lt }, link{ rt }, parent { pr } { }
+
+    Nodo( T && theElement, Nodo *lt, Nodo *rt,Nodo *pr)
+    : data{ std::move( theElement ) }, left{ lt }, link{ rt }, parent{ pr } { }
 };
+
+template <class T>
+Nodo<T>::Nodo(){
+    left = nullptr;
+    link = nullptr;
+    parent = nullptr;
+}
 
 template <class T>
 class linkedListIterator
@@ -458,21 +473,4 @@ void ListaOrdenada<T>::deleteNode(const T elemento)
                 cout << "El elemento a borrar no esta en la lista" << endl;
         }
     }
-}
-
-int main()
-{
-    ListaDesordenada<int> mylista;
-    mylista.insertFirst(5);
-    mylista.insertLast(10);
-    mylista.deleteNode(5);
-    mylista.print();
-    mylista.search(10);
-
-    cout<<"LISTA ORDENADA"<<endl;
-    ListaOrdenada<int> orden;
-    orden.insert(5);
-    orden.insert(1);
-    orden.print();
-    return 0;
 }
