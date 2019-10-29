@@ -1,12 +1,11 @@
 #include <iostream>
-#include "red_back.h"
+#include "segment.h"
 using namespace std;
 
 int main(){
-    red_black<int> numbers;
-    numbers.insert(3);
-    numbers.insert(2);
-    numbers.insert(1);
-    numbers.print();
+    int arr[11] = {65,2,96,63,46,73,72,64,92,36,7};
+    SegmentTree<int> sumitas(arr,11);
+    cout << sumitas.suma(2,9);
     return 0;
 }
+
